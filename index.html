@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubQ - Bilinçaltı Sorgulama & İçsel Keşif Rehberi</title>
+  <meta name="theme-color" content="#121110">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <div id="app">
+    
+    <!-- Top Header Bar -->
+    <header class="app-header">
+      <div class="brand-container" data-open-about>
+        <div class="brand-logo-badge">Q</div>
+        <div>
+          <h1 class="brand-title">SubQ</h1>
+          <p class="brand-subtitle">Alt Katman & Keşif Rehberi</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Temayı Değiştir">
+          <span class="theme-icon">☀️</span>
+        </button>
+        <button class="icon-btn" data-open-about aria-label="Hakkında">
+          ℹ️
+        </button>
+      </div>
+    </header>
+
+    <!-- Privacy Banner -->
+    <div class="privacy-banner">
+      <span>🛡️ %100 Cihaz İçi Gizlilik: Verileriniz yalnızca bu cihazda saklanır.</span>
+    </div>
+
+    <!-- Main Content Tab Containers -->
+    <main class="main-content">
+
+      <!-- MODÜL 1: BİLGİ BANKASI -->
+      <section id="tab-knowledge" class="tab-panel active">
+        <div class="section-header">
+          <h2 class="section-title">Bilgi Bankası</h2>
+          <p class="section-desc">Bilinçaltı, biyolojik kod çözme ve atasal dinamiklerin temel ilkeleri.</p>
+        </div>
+
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="knowledge-search" class="search-input" placeholder="Makale, kavram veya teori ara...">
+        </div>
+
+        <div id="knowledge-chips" class="chip-scroll-container">
+          <!-- Category Chips rendered dynamically -->
+        </div>
+
+        <div id="knowledge-grid" class="cards-grid">
+          <!-- Articles rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- MODÜL 2: BEDEN HARİTASI (SEMPTOM SÖZLÜĞÜ) -->
+      <section id="tab-bodymap" class="tab-panel" hidden>
+        <div class="section-header">
+          <h2 class="section-title">Beden Haritası</h2>
+          <p class="section-desc">Fiziksel sinyallerinizin altındaki muhtemel kök duygusal şoklar.</p>
+        </div>
+
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="symptom-search-input" class="search-input" placeholder="Semptom (ör: mide, egzama, eklem) veya duygu ara...">
+        </div>
+
+        <div class="body-map-wrapper">
+          <!-- Interactive SVG Silhouette -->
+          <div class="svg-silhouette-container">
+            <span class="svg-silhouette-title">Vücut Bölgesine Dokunun</span>
+            <svg class="svg-body-silhouette" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+              <!-- Silhouette outline guide -->
+              <!-- Baş / Head -->
+              <circle class="svg-body-region" data-region="head" cx="100" cy="40" r="28" />
+              <!-- Boğaz / Throat -->
+              <rect class="svg-body-region" data-region="throat" x="86" y="72" width="28" height="24" rx="6" />
+              <!-- Göğüs / Chest -->
+              <path class="svg-body-region" data-region="chest" d="M60 100 H140 V150 H60 Z" />
+              <!-- Kalp / Heart -->
+              <path class="svg-body-region" data-region="heart" d="M92 116 c-3 -5 -10 -5 -13 0 c-4 6 1 12 5 16 l 8 8 l 8 -8 c 4 -4 9 -10 5 -16 c-3 -5 -10 -5 -13 0 z" title="Kalp & Dolaşım" />
+              <!-- Mide / Stomach -->
+              <path class="svg-body-region" data-region="stomach" d="M65 156 H135 V206 H65 Z" />
+              <!-- Pelvis / Root -->
+              <path class="svg-body-region" data-region="pelvis" d="M70 212 H130 V252 H70 Z" />
+              <!-- Eklem / Arms & Legs touch targets -->
+              <circle class="svg-body-region" data-region="bones" cx="42" cy="130" r="18" />
+              <circle class="svg-body-region" data-region="bones" cx="158" cy="130" r="18" />
+              <rect class="svg-body-region" data-region="bones" x="72" y="260" width="22" height="110" rx="10" />
+              <rect class="svg-body-region" data-region="bones" x="106" y="260" width="22" height="110" rx="10" />
+              <!-- Cilt / Skin badge overlay -->
+              <circle class="svg-body-region" data-region="skin" cx="160" cy="40" r="16" />
+              <text x="160" y="44" font-size="10" text-anchor="middle" fill="#FFF" pointer-events="none">✨</text>
+            </svg>
+          </div>
+
+          <!-- Symptom List & Region Selector -->
+          <div id="symptom-list-container">
+            <div id="body-region-chips" class="chip-scroll-container">
+              <!-- Region Chips rendered dynamically -->
+            </div>
+
+            <div id="symptom-grid" class="cards-grid">
+              <!-- Symptoms rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODÜL 3: EGZERSİZLER (ŞİFA PRATİKLERİ) -->
+      <section id="tab-exercises" class="tab-panel" hidden>
+        <div class="section-header">
+          <h2 class="section-title">Egzersizler</h2>
+          <p class="section-desc">Kromanyon ile onun dilinden (sembol, nefes, niyet) iletişim pratikleri.</p>
+        </div>
+
+        <!-- Hero Card: 5-min Bedtime Ritual -->
+        <div class="exercise-hero-card">
+          <h3>🌙 Uyku Öncesi 5 Dakika Niyet Ritüeli</h3>
+          <p class="section-desc">Zihnin Teta dalgalarına geçtiği hipnotik anı niyet teslimiyetiyle kullanın.</p>
+          
+          <div id="breath-pulse-circle" class="timer-circle-container">
+            <div id="timer-display" class="timer-time">05:00</div>
+            <div id="timer-phase-label" class="timer-phase-text">Hazırsanız Başlatın</div>
+          </div>
+
+          <div class="btn-group" style="flex-wrap: wrap;">
+            <button id="timer-start-btn" class="btn btn-primary">▶️ Başlat</button>
+            <button id="timer-pause-btn" class="btn btn-secondary" hidden>⏸️ Duraklat</button>
+            <button id="timer-reset-btn" class="btn btn-secondary">🔄 Sıfırla</button>
+            <button id="timer-audio-toggle-btn" class="btn btn-secondary">🔊 Ortam Sesi: Açık</button>
+          </div>
+        </div>
+
+        <!-- Canvas Card: Digital Symbolic Ritual -->
+        <div class="canvas-card">
+          <h3>🔥 Dijital Sembolik Veda Tuvali</h3>
+          <p class="section-desc">Hayatınızdan çıkarmak istediğiniz engeli veya toksik döngüyü çizin ve sembolik olarak yok edin.</p>
+          
+          <div style="margin: 16px 0;">
+            <canvas id="symbolic-canvas" class="symbolic-canvas-element"></canvas>
+          </div>
+
+          <div class="btn-group">
+            <button id="canvas-burn-btn" class="btn btn-primary">🔥 Sembolik Olarak Yak / Yok Et</button>
+            <button id="canvas-clear-btn" class="btn btn-secondary">🧹 Temizle</button>
+          </div>
+        </div>
+
+        <!-- Vocal Confrontation Card -->
+        <div class="planner-card">
+          <h3>🗣️ Sözün Gücü (Sesli Yüzleşme)</h3>
+          <p class="section-desc" style="margin-bottom:14px;">Karantinaya alınmış bastırılmış duyguyu serbest bırakmak için aşağıdaki cümleyi sesli ifade edin:</p>
+          
+          <div class="vocal-prompt-card">
+            <strong>Prompt 1:</strong> "Olay anında sesimi çıkaramadığım kişi karşımda olsaydı ona şunu söylerdim..."
+          </div>
+          <div class="vocal-prompt-card">
+            <strong>Prompt 2:</strong> "Bedenimdeki bu düğümlenme aslında bana şunu anlatmak istiyor..."
+          </div>
+          <div class="vocal-prompt-card">
+            <strong>Prompt 3:</strong> "Atalarımın ödemediği bedeli ödemeyi bırakıyorum, kendi yaşamıma izin veriyorum."
+          </div>
+        </div>
+
+        <!-- 4. Metot: Bilinçaltı Projeksiyonu (Masadaki Bardak ve Aile Odası) -->
+        <div class="planner-card projection-card" id="exercise-projection-card">
+          <div class="planner-card-header">
+            <h3>🍵 Bilinçaltı Projeksiyonu (Masadaki Bardak)</h3>
+            <span class="article-badge">Atasal Sadakat</span>
+          </div>
+          <p class="section-desc" style="margin-bottom:14px;">
+            Bilinçaltı sembollerle konuşur. Çözemediğiniz bir döngüyü masadaki bardağa yansıtarak kök hissin kime ait olduğunu sezgisel olarak açığa çıkarın.
+          </p>
+
+          <div class="projection-steps-container">
+            <div class="projection-step-item active" data-step="1">
+              <div class="step-number-badge">1</div>
+              <div class="step-content">
+                <strong>Sorunu Bardağa Yansıtın:</strong> Tıkanıklığı (sürekli borçlanmak, değersizlik hissi veya belirli bir semptom) masanın ortasındaki bir bardağa benzetin.
+              </div>
+            </div>
+
+            <div class="projection-step-item" data-step="2">
+              <div class="step-number-badge">2</div>
+              <div class="step-content">
+                <strong>Aile Odasını Hayal Edin:</strong> Gözlerinizi kapatın; tüm sülalenizi, anne-baba ve eski atalarınızı o odada, masanın etrafında hayal edin.
+              </div>
+            </div>
+
+            <div class="projection-step-item" data-step="3">
+              <div class="step-number-badge">3</div>
+              <div class="step-content">
+                <strong>Kromanyon'a Soruyu Bırakın:</strong> Zihinsel zorlama yapmadan sorun: <em>"Bu bardağa (bu yüke) sülalemden kim bakıyor?"</em>
+              </div>
+            </div>
+
+            <div class="projection-step-item" data-step="4">
+              <div class="step-number-badge">4</div>
+              <div class="step-content">
+                <strong>Bedenin Tepkisini İzleyin:</strong> Gözünüzün önüne ilk gelen ataya odaklanın. Bedeninizde uyanan ani öfke, utanç veya keder hissini gözlemleyin.
+              </div>
+            </div>
+
+            <div class="projection-step-item" data-step="5">
+              <div class="step-number-badge">5</div>
+              <div class="step-content">
+                <strong>Özgürleştirici Cümleyi İfade Edin:</strong> O ataya bakarak söyleyin: <em>"Bu senin kaderindi, acını saygıyla onurlandırıyorum ama bedelini ödemeyi bırakıyorum. Ben kendi yaşamıma izin veriyorum."</em>
+              </div>
+            </div>
+          </div>
+
+          <div class="projection-interactive-box" style="margin-top:16px;">
+            <input type="text" id="projection-target-input" class="form-input" placeholder="Hangi döngüyü yansıtıyorsunuz? (Örn: Sürekli Borçlanmak)">
+            <button id="projection-complete-btn" class="btn btn-primary btn-full" style="margin-top:10px;">
+              👁️ Projeksiyonu Tamamla & Günlüğe Farkındalık Notu Olarak Ekle
+            </button>
+          </div>
+        </div>
+
+        <!-- Somatik Beden Pusulası & Beden Taraması -->
+        <div class="planner-card somatic-card" id="exercise-somatic-card">
+          <div class="planner-card-header">
+            <h3>🧭 Somatik Beden Pusulası & Beden Taraması</h3>
+            <span class="article-badge">Biyolojik Dil</span>
+          </div>
+          <p class="section-desc" style="margin-bottom:14px;">
+            Zihin olayları rasyonalize edebilir ama beden asla yalan söylemez. Bedeninizin verdiği istemsiz sinyalleri pusula gibi dinleyin:
+          </p>
+
+          <div class="somatic-signals-grid">
+            <div class="somatic-signal-card" data-signal="eller">
+              <span class="somatic-icon">🤲</span>
+              <strong>Ellerde Terleme / Titreme</strong>
+              <p>Bastırılmış bir yüzleşme anının veya geçmiş şokun deşarj sinyali.</p>
+            </div>
+            <div class="somatic-signal-card" data-signal="gogus">
+              <span class="somatic-icon">🫁</span>
+              <strong>Göğüste Baskı & Daralma</strong>
+              <p>Kişisel alan ihlali, kapana kısılmışlık ve boğulma travması.</p>
+            </div>
+            <div class="somatic-signal-card" data-signal="bogaz">
+              <span class="somatic-icon">🗣️</span>
+              <strong>Boğazda Düğümlenme</strong>
+              <p>Söylenemeyen, yutulmak zorunda kalınan öfke ve ağır sözler.</p>
+            </div>
+            <div class="somatic-signal-card" data-signal="mide">
+              <span class="somatic-icon">🫃</span>
+              <strong>Midede Kasılma & Yanma</strong>
+              <p>Hazmedilemeyen durum, kabul edilemeyen kişi veya haksızlık.</p>
+            </div>
+          </div>
+
+          <div class="tip-box" style="margin-top:14px;">
+            💡 <strong>Nasıl Uygulanır:</strong> Bu sinyalleri hissettiğinizde onları bastırmaya çalışmayın. Yalnızca elinizi o bölgeye koyun ve 3 derin nefesle: <em>"Seni duyuyorum, buradasın ve artık güvendeyiz"</em> diyerek bedeninize izin verin.
+          </div>
+        </div>
+      </section>
+
+      <!-- MODÜL 4: KİŞİSEL PLANLAYICI (LOCAL STORAGE) -->
+      <section id="tab-planner" class="tab-panel" hidden>
+        <div class="section-header">
+          <h2 class="section-title">Kişisel Planlayıcı</h2>
+          <p class="section-desc">Tamamen telefonunuzda saklanan izole niyet takibi ve duygu günlüğü.</p>
+        </div>
+
+        <!-- Card 1: Active Weekly Intention -->
+        <div class="planner-card">
+          <div class="planner-card-header">
+            <h3>🌙 Bu Haftaki Niyetim</h3>
+            <span class="article-badge">7 Günlük Takip</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Çalışılan Konu / Kök Semptom</label>
+            <select id="planner-preset-select" class="form-select" style="margin-bottom:8px;">
+              <option value="">-- Hazır Şablon Seçin --</option>
+              <option value="mide">Mide Yanması & Hazımsızlık (Öfke / Lokma)</option>
+              <option value="degersizlik">Değersizlik Hissi & Eklem Ağrıları</option>
+              <option value="ofke">Bastırılmış Öfke & Sınır İhlali</option>
+              <option value="borc">Borç Döngüsü & Atasal Sadakat</option>
+              <option value="egzama">Cilt Sorunları & Egzama (Ayrılık Şoku)</option>
+              <option value="bogaz">Boğaz & Ses Kısılması (Yutkunan Sözler)</option>
+              <option value="gogus">Göğüs Daralması (Alan Sıkışması & Boğulma)</option>
+              <option value="kalp">Kalp Çarpıntısı & Aşırı Yük (Sevgi Tıkanıklığı)</option>
+              <option value="sigara">Sigara Bağımlılığı (Özgür Nefes İhtiyacı)</option>
+              <option value="alkol">Alkol Bağımlılığı (Anne Sevgisi Boşluğu)</option>
+              <option value="bas">Baş Ağrısı & Migren (Aşırı Kontrol Baskısı)</option>
+            </select>
+            <input type="text" id="planner-target-input" class="form-input" placeholder="Örn: Mide Yanması veya Değersizlik Hissi">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Uyumadan Önceki Niyet Cümlem</label>
+            <textarea id="planner-sentence-textarea" class="form-textarea" placeholder="Bilinçaltım, bu durumun altındaki duyguyu bul ve şifalandır..."></textarea>
+          </div>
+
+          <button id="save-intention-btn" class="btn btn-secondary btn-full" style="margin-bottom: 16px;">
+            💾 Niyeti Kaydet
+          </button>
+
+          <!-- 7-Day Circular Progress Grid -->
+          <div class="form-label">Uyku Öncesi Check-in (Dokunarak Tamamla)</div>
+          <div id="planner-days-grid" class="days-grid">
+            <!-- 7 circular buttons rendered dynamically -->
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <span id="planner-progress-text" style="font-size:0.8rem; color:var(--text-muted);">0 / 7 Gece Tamamlandı</span>
+          </div>
+          <div class="progress-bar-track">
+            <div id="planner-progress-fill" class="progress-bar-fill"></div>
+          </div>
+
+          <div class="tip-box">
+            💡 <strong>Hatırlatma:</strong> Uykuya dalarken endişelenmeyin, sadece niyetinizi söyleyip sakince bilinçaltınıza (Kromanyon) bırakın.
+          </div>
+        </div>
+
+        <!-- Card 2: Journal Logger -->
+        <div class="planner-card">
+          <h3>📖 Farkındalık Notları (Duygu Günlüğü)</h3>
+          <p class="section-desc" style="margin-bottom: 14px;">Şu an bedeninizde ve zihninizde fark ettiğiniz döngüyü kaydedin.</p>
+
+          <div class="form-group">
+            <label class="form-label">Şu an bedeninde ne hissediyorsun?</label>
+            <div id="journal-feeling-chips" class="chip-scroll-container" style="margin-bottom:12px;">
+              <!-- Feeling Chips rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hangi beden bölgesinde gerginlik var?</label>
+            <div id="journal-region-chips" class="chip-scroll-container" style="margin-bottom:12px;">
+              <!-- Region Chips rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Duygu Günlüğü / Farkındalık Notu</label>
+            <textarea id="journal-text" class="form-textarea" placeholder="Bugün hangi döngüm tekrar etti? Ne hissettim?..."></textarea>
+          </div>
+
+          <button id="save-journal-btn" class="btn btn-primary btn-full">
+            📝 Notu Cihaza Kaydet
+          </button>
+        </div>
+
+        <!-- Card 3: Saved Entries Timeline -->
+        <div class="planner-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3>📜 Geçmiş Farkındalık Notlarım</h3>
+          </div>
+
+          <div class="search-box" style="margin-bottom:12px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="journal-search-input" class="search-input" placeholder="Geçmiş notlarda ara (metin, duygu, bölge)...">
+          </div>
+
+          <div id="journal-timeline-grid" class="journal-timeline">
+            <!-- Saved entries rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Card 4: Data Backup & Management -->
+        <div class="planner-card">
+          <h3>💾 Veri Yönetimi & Güvenli Yedekleme</h3>
+          <p class="section-desc" style="margin-bottom: 14px;">Tüm notlarınızı ve niyetlerinizi JSON formatında cihazınıza indirebilir veya başka bir cihaza aktarabilirsiniz.</p>
+
+          <div class="btn-group" style="flex-wrap: wrap;">
+            <button id="export-data-btn" class="btn btn-secondary">
+              📥 Verileri Dışa Aktar (JSON)
+            </button>
+            
+            <button id="import-data-btn-trigger" class="btn btn-secondary">
+              📤 Verileri İçe Aktar (JSON)
+            </button>
+            <input type="file" id="import-data-file-input" accept=".json" style="display:none;">
+
+            <button id="clear-all-data-btn" class="btn btn-secondary" style="border-color: rgba(194, 65, 12, 0.4); color: var(--accent-terracotta);">
+              🗑️ Tüm Verileri Temizle
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav" role="tablist">
+      <button class="nav-item active" data-tab-target="knowledge" role="tab" aria-selected="true">
+        <span class="nav-icon">📚</span>
+        <span>Bilgi Bankası</span>
+      </button>
+      <button class="nav-item" data-tab-target="bodymap" role="tab" aria-selected="false">
+        <span class="nav-icon">🫀</span>
+        <span>Beden Haritası</span>
+      </button>
+      <button class="nav-item" data-tab-target="exercises" role="tab" aria-selected="false">
+        <span class="nav-icon">✨</span>
+        <span>Egzersizler</span>
+      </button>
+      <button class="nav-item" data-tab-target="planner" role="tab" aria-selected="false">
+        <span class="nav-icon">🌙</span>
+        <span>Planlayıcı</span>
+      </button>
+    </nav>
+
+    <!-- MODAL: HAKKINDA / ONBOARDING -->
+    <div id="modal-about" class="modal-container" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-about-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="modal-about-title" class="modal-title">SubQ Nedir?</h3>
+          <button class="modal-close" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="text-align:center; margin-bottom:20px;">
+            <div class="brand-logo-badge" style="width:60px; height:60px; font-size:1.8rem; margin:0 auto 10px;">Q</div>
+            <h2 style="font-size:1.4rem; font-weight:700;">SubQ</h2>
+            <p style="font-size:0.88rem; color:var(--accent-amber);">Alt Katman & Keşif Rehberi</p>
+          </div>
+
+          <div class="symptom-detail-block">
+            <h4 style="color:var(--accent-amber); font-weight:700;">Sub (Subconscious / Alt Katman)</h4>
+            <p>Zihnimizin okyanusunun derinliklerini, karar ve biyolojik tepkilerimizin %80'ini yöneten hayatta kalma odaklı gücü (Kromanyon) temsil eder.</p>
+          </div>
+
+          <div class="symptom-detail-block">
+            <h4 style="color:var(--accent-sage); font-weight:700;">Q (Query & Quest / Sorgu ve Keşif)</h4>
+            <p>Bedenimizin verdiği fiziksel sinyallerin (semptomların) altındaki asıl duygusal kökeni sorgulamayı ve kendi içsel şifamızı bulduğumuz keşif yolculuğunu ifade eder.</p>
+          </div>
+
+          <div class="tip-box" style="margin-top:16px;">
+            🛡️ <strong>Yerel Hafıza Güvencesi:</strong> SubQ uygulamasında kullanıcı girişi yoktur. Tüm verileriniz izole biçimde yalnızca telefonunuzda saklanır.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: ARTICLE READER -->
+    <div id="modal-article" class="modal-container" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="article-modal-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="article-modal-title" class="modal-title">Makale</h3>
+          <button class="modal-close" aria-label="Kapat">&times;</button>
+        </div>
+        <div id="article-modal-body" class="modal-body">
+          <!-- Content dynamically rendered -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: SYMPTOM DETAIL SHEET -->
+    <div id="modal-symptom" class="modal-container" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="symptom-modal-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="symptom-modal-title" class="modal-title">Semptom Detayı</h3>
+          <button class="modal-close" aria-label="Kapat">&times;</button>
+        </div>
+        <div id="symptom-modal-body" class="modal-body">
+          <!-- Content dynamically rendered -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT JOURNAL ENTRY -->
+    <div id="modal-edit-journal" class="modal-container" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-edit-journal-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="modal-edit-journal-title" class="modal-title">Notu Düzenle</h3>
+          <button class="modal-close" aria-label="Kapat">&times;</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-journal-id">
+          <div class="form-group">
+            <label class="form-label">Duygu Günlüğü / Farkındalık Notu</label>
+            <textarea id="edit-journal-text" class="form-textarea" style="min-height: 120px;"></textarea>
+          </div>
+          <button id="save-edited-journal-btn" class="btn btn-primary btn-full">
+            💾 Değişiklikleri Kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
