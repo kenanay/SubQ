@@ -430,6 +430,21 @@ html, body {
   height: auto;
 }
 
+/* Anatomical Body Silhouette Contour Outline */
+.svg-body-contour {
+  fill: rgba(217, 119, 6, 0.05);
+  stroke: rgba(217, 119, 6, 0.28);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+[data-theme="light"] .svg-body-contour {
+  fill: rgba(217, 119, 6, 0.04);
+  stroke: rgba(217, 119, 6, 0.38);
+}
+
 /* SVG Clickable Regions (Min 44x44px touch targets) */
 .svg-body-region {
   cursor: pointer;
@@ -437,6 +452,13 @@ html, body {
   stroke: var(--accent-amber);
   stroke-width: 1.5;
   transition: all 0.25s ease;
+  outline: none;
+}
+
+.svg-body-region:focus-visible {
+  stroke: #FFF;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px var(--accent-amber));
 }
 
 .svg-body-region:hover,
@@ -936,6 +958,31 @@ html, body {
   transition: width 0.4s ease;
 }
 
+/* 7-Day Cycle Completed Celebration Card */
+.cycle-celebration-card {
+  background: rgba(5, 150, 105, 0.12);
+  border: 1px solid rgba(5, 150, 105, 0.4);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15);
+  animation: fadeIn 0.4s ease;
+}
+
+.celebration-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--accent-sage);
+  margin-bottom: 6px;
+}
+
+.celebration-desc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
 .tip-box {
   background: rgba(217, 119, 6, 0.08);
   border-left: 3px solid var(--accent-amber);
@@ -972,17 +1019,22 @@ html, body {
   color: var(--text-muted);
 }
 
+.copy-entry-btn,
+.edit-entry-btn,
 .delete-entry-btn {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  opacity: 0.65;
+  transition: opacity 0.2s, transform 0.15s;
 }
 
+.copy-entry-btn:hover,
+.edit-entry-btn:hover,
 .delete-entry-btn:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .journal-tags {

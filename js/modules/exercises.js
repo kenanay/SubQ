@@ -131,8 +131,53 @@ export const ExercisesController = {
     this.updateTimerDisplay();
   },
 
+  /**
+   * Harmonious Singing Bowl Chime upon completion (Web Audio API)
+   */
+  playCompletionChime() {
+    if (!this.isAudioEnabled) return;
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!this.audioContext) {
+        this.audioContext = new AudioCtx();
+      }
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+
+      const now = this.audioContext.currentTime;
+
+      // Harmonic frequencies for meditation chime (432 Hz fundamental + gentle overtones)
+      const frequencies = [432, 864, 1296];
+      const gains = [0.18, 0.08, 0.03];
+
+      frequencies.forEach((freq, idx) => {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(gains[idx], now + 0.05); // soft strike
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 4.5); // long meditative decay
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.start(now);
+        osc.stop(now + 4.5);
+      });
+    } catch (e) {
+      console.log('Chime playback error:', e);
+    }
+  },
+
   completeTimer() {
     this.pauseTimer();
+    this.playCompletionChime();
     UIController.showToast('✨ 5 Dakikalık Niyet Ritüeli Tamamlandı. Şimdi sakince uykuya dalabilirsiniz.');
   },
 
@@ -409,8 +454,9 @@ export const ExercisesController = {
 
         UIController.showToast('✨ Projeksiyon çalışması tamamlandı ve günlüğünüze kaydedildi!');
 
-        // Dispatch storage update so journal list updates if planner is open
+        // Dispatch storage update so planner and journal timelines update instantly
         window.dispatchEvent(new CustomEvent('subq-intention-updated'));
+        window.dispatchEvent(new CustomEvent('subq-journal-updated'));
       });
     }
   },

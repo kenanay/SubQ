@@ -3,6 +3,7 @@
  */
 import { SUBQ_DATA } from '../data.js';
 import { UIController } from './ui.js';
+import { fuzzyIncludes } from './searchUtil.js';
 
 export const KnowledgeController = {
   articles: SUBQ_DATA.articles,
@@ -83,10 +84,10 @@ export const KnowledgeController = {
     // Filter by Search Query
     if (this.searchQuery) {
       filtered = filtered.filter(item => 
-        item.title.toLowerCase().includes(this.searchQuery) ||
-        item.summary.toLowerCase().includes(this.searchQuery) ||
-        item.category.toLowerCase().includes(this.searchQuery) ||
-        item.sections.some(s => s.heading.toLowerCase().includes(this.searchQuery) || s.content.toLowerCase().includes(this.searchQuery))
+        fuzzyIncludes(item.title, this.searchQuery) ||
+        fuzzyIncludes(item.summary, this.searchQuery) ||
+        fuzzyIncludes(item.category, this.searchQuery) ||
+        item.sections.some(s => fuzzyIncludes(s.heading, this.searchQuery) || fuzzyIncludes(s.content, this.searchQuery))
       );
     }
 

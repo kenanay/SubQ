@@ -4,6 +4,7 @@
 import { SUBQ_DATA } from '../data.js';
 import { StorageService } from './storage.js';
 import { UIController } from './ui.js';
+import { fuzzyIncludes } from './searchUtil.js';
 
 export const BodyMapController = {
   symptoms: SUBQ_DATA.symptoms,
@@ -81,12 +82,12 @@ export const BodyMapController = {
   },
 
   /**
-   * Bind SVG Silhouette Clicks
+   * Bind SVG Silhouette Clicks & Keyboard Accessibility
    */
   bindSvgSilhouetteInteractivity() {
     const svgRegions = document.querySelectorAll('.svg-body-region');
     svgRegions.forEach(regionEl => {
-      regionEl.addEventListener('click', () => {
+      const handleSelect = () => {
         const region = regionEl.getAttribute('data-region');
         this.setRegionFilter(region);
         
@@ -94,6 +95,14 @@ export const BodyMapController = {
         const listContainer = document.getElementById('symptom-list-container');
         if (listContainer) {
           listContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      regionEl.addEventListener('click', handleSelect);
+      regionEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleSelect();
         }
       });
     });
@@ -129,10 +138,10 @@ export const BodyMapController = {
     // Filter by Search Query
     if (this.searchQuery) {
       filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(this.searchQuery) ||
-        item.rootEmotion.toLowerCase().includes(this.searchQuery) ||
-        item.conflict.toLowerCase().includes(this.searchQuery) ||
-        item.keywords.some(k => k.toLowerCase().includes(this.searchQuery))
+        fuzzyIncludes(item.name, this.searchQuery) ||
+        fuzzyIncludes(item.rootEmotion, this.searchQuery) ||
+        fuzzyIncludes(item.conflict, this.searchQuery) ||
+        item.keywords.some(k => fuzzyIncludes(k, this.searchQuery))
       );
     }
 

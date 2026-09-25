@@ -80,27 +80,60 @@
           <!-- Interactive SVG Silhouette -->
           <div class="svg-silhouette-container">
             <span class="svg-silhouette-title">Vücut Bölgesine Dokunun</span>
-            <svg class="svg-body-silhouette" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
-              <!-- Silhouette outline guide -->
+            <svg class="svg-body-silhouette" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg" role="region" aria-label="Etkileşimli Beden Haritası">
+              <!-- Anatomik Silüet Dış Kontur Çizgisi -->
+              <path class="svg-body-contour" d="
+                M100 12 
+                C116 12 128 24 128 40 
+                C128 54 118 66 109 68 
+                C111 72 112 76 114 78 
+                C128 82 148 88 162 98 
+                C168 103 166 116 162 135 
+                C158 152 154 175 150 205 
+                C148 212 142 214 138 208 
+                C136 195 137 175 138 155 
+                C133 165 130 178 128 190 
+                C132 205 133 220 128 238 
+                C125 255 127 285 126 320 
+                C125 350 124 375 122 388 
+                C121 392 112 392 110 388 
+                C108 375 106 335 105 285 
+                C104 255 102 248 100 248 
+                C98 248 96 255 95 285 
+                C94 335 92 375 90 388 
+                C88 392 79 392 78 388 
+                C76 375 75 350 74 320 
+                C73 285 75 255 72 238 
+                C67 220 68 205 72 190 
+                C70 178 67 165 62 155 
+                C63 175 64 195 62 208 
+                C58 214 52 212 50 205 
+                C46 175 42 152 38 135 
+                C34 116 32 103 38 98 
+                C52 88 72 82 86 78 
+                C88 76 89 72 91 68 
+                C82 66 72 54 72 40 
+                C72 24 84 12 100 12 Z
+              " />
               <!-- Baş / Head -->
-              <circle class="svg-body-region" data-region="head" cx="100" cy="40" r="28" />
+              <circle class="svg-body-region" data-region="head" cx="100" cy="40" r="28" role="button" tabindex="0" aria-label="Baş ve Zihin Bölgesi" />
               <!-- Boğaz / Throat -->
-              <rect class="svg-body-region" data-region="throat" x="86" y="72" width="28" height="24" rx="6" />
+              <rect class="svg-body-region" data-region="throat" x="86" y="72" width="28" height="24" rx="6" role="button" tabindex="0" aria-label="Boyun ve Boğaz Bölgesi" />
               <!-- Göğüs / Chest -->
-              <path class="svg-body-region" data-region="chest" d="M60 100 H140 V150 H60 Z" />
+              <path class="svg-body-region" data-region="chest" d="M60 100 H140 V150 H60 Z" role="button" tabindex="0" aria-label="Göğüs ve Nefes Bölgesi" />
               <!-- Kalp / Heart -->
-              <path class="svg-body-region" data-region="heart" d="M92 116 c-3 -5 -10 -5 -13 0 c-4 6 1 12 5 16 l 8 8 l 8 -8 c 4 -4 9 -10 5 -16 c-3 -5 -10 -5 -13 0 z" title="Kalp & Dolaşım" />
+              <path class="svg-body-region" data-region="heart" d="M92 116 c-3 -5 -10 -5 -13 0 c-4 6 1 12 5 16 l 8 8 l 8 -8 c 4 -4 9 -10 5 -16 c-3 -5 -10 -5 -13 0 z" role="button" tabindex="0" aria-label="Kalp ve Dolaşım Bölgesi" title="Kalp & Dolaşım" />
               <!-- Mide / Stomach -->
-              <path class="svg-body-region" data-region="stomach" d="M65 156 H135 V206 H65 Z" />
+              <path class="svg-body-region" data-region="stomach" d="M65 156 H135 V206 H65 Z" role="button" tabindex="0" aria-label="Mide ve Sindirim Bölgesi" />
               <!-- Pelvis / Root -->
-              <path class="svg-body-region" data-region="pelvis" d="M70 212 H130 V252 H70 Z" />
+              <path class="svg-body-region" data-region="pelvis" d="M70 212 H130 V252 H70 Z" role="button" tabindex="0" aria-label="Pelvis ve Kök Bölgesi" />
               <!-- Eklem / Arms & Legs touch targets -->
-              <circle class="svg-body-region" data-region="bones" cx="42" cy="130" r="18" />
-              <circle class="svg-body-region" data-region="bones" cx="158" cy="130" r="18" />
-              <rect class="svg-body-region" data-region="bones" x="72" y="260" width="22" height="110" rx="10" />
-              <rect class="svg-body-region" data-region="bones" x="106" y="260" width="22" height="110" rx="10" />
+              <circle class="svg-body-region" data-region="bones" cx="42" cy="130" r="18" role="button" tabindex="0" aria-label="Sol Kol ve Eklem Bölgesi" />
+              <circle class="svg-body-region" data-region="bones" cx="158" cy="130" r="18" role="button" tabindex="0" aria-label="Sağ Kol ve Eklem Bölgesi" />
+              <rect class="svg-body-region" data-region="bones" x="72" y="260" width="22" height="110" rx="10" role="button" tabindex="0" aria-label="Sol Bacak ve Kemik Bölgesi" />
+              <rect class="svg-body-region" data-region="bones" x="106" y="260" width="22" height="110" rx="10" role="button" tabindex="0" aria-label="Sağ Bacak ve Kemik Bölgesi" />
               <!-- Cilt / Skin badge overlay -->
-              <circle class="svg-body-region" data-region="skin" cx="160" cy="40" r="16" />
+              <circle class="svg-body-region" data-region="skin" cx="160" cy="40" r="16" role="button" tabindex="0" aria-label="Cilt ve Egzama Bölgesi" />
               <text x="160" y="44" font-size="10" text-anchor="middle" fill="#FFF" pointer-events="none">✨</text>
             </svg>
           </div>
@@ -323,6 +356,9 @@
             <div id="planner-progress-fill" class="progress-bar-fill"></div>
           </div>
 
+          <!-- 7-Day Cycle Completed Celebration Card -->
+          <div id="planner-cycle-completed-box" style="display:none; margin-top:14px;"></div>
+
           <div class="tip-box">
             💡 <strong>Hatırlatma:</strong> Uykuya dalarken endişelenmeyin, sadece niyetinizi söyleyip sakince bilinçaltınıza (Kromanyon) bırakın.
           </div>
@@ -368,6 +404,10 @@
             <input type="text" id="journal-search-input" class="search-input" placeholder="Geçmiş notlarda ara (metin, duygu, bölge)...">
           </div>
 
+          <div id="journal-filter-chips" class="chip-scroll-container" style="margin-bottom:14px;">
+            <!-- Dynamic filter chips (Tümü, Duygular) -->
+          </div>
+
           <div id="journal-timeline-grid" class="journal-timeline">
             <!-- Saved entries rendered dynamically -->
           </div>
@@ -379,6 +419,10 @@
           <p class="section-desc" style="margin-bottom: 14px;">Tüm notlarınızı ve niyetlerinizi JSON formatında cihazınıza indirebilir veya başka bir cihaza aktarabilirsiniz.</p>
 
           <div class="btn-group" style="flex-wrap: wrap;">
+            <button id="copy-all-notes-btn" class="btn btn-secondary">
+              📋 Tüm Notları Metin Olarak Kopyala
+            </button>
+
             <button id="export-data-btn" class="btn btn-secondary">
               📥 Verileri Dışa Aktar (JSON)
             </button>

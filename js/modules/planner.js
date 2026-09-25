@@ -4,6 +4,7 @@
  */
 import { StorageService } from './storage.js';
 import { UIController } from './ui.js';
+import { fuzzyIncludes } from './searchUtil.js';
 
 function escapeHTML(str) {
   return String(str || '')
@@ -18,6 +19,7 @@ export const PlannerController = {
   activeFeeling: 'Gerginlik',
   selectedRegion: 'Genel',
   journalSearchQuery: '',
+  journalActiveFilter: 'all',
 
   init() {
     this.renderIntentionCard();
@@ -26,13 +28,19 @@ export const PlannerController = {
     this.renderRegionChips();
     this.bindJournalForm();
     this.bindJournalSearch();
+    this.renderJournalFilterChips();
     this.bindEditModal();
     this.renderJournalTimeline();
     this.bindDataBackupEvents();
 
-    // Listen for custom update events (e.g. from Beden Haritası)
+    // Listen for custom update events (from Beden Haritası and Egzersizler)
     window.addEventListener('subq-intention-updated', () => {
       this.renderIntentionCard();
+      this.renderJournalTimeline();
+    });
+
+    window.addEventListener('subq-journal-updated', () => {
+      this.renderJournalTimeline();
     });
   },
 
@@ -47,6 +55,7 @@ export const PlannerController = {
     const daysContainer = document.getElementById('planner-days-grid');
     const progressText = document.getElementById('planner-progress-text');
     const progressBarFill = document.getElementById('planner-progress-fill');
+    const cycleBox = document.getElementById('planner-cycle-completed-box');
 
     if (targetInput) targetInput.value = intention.target || '';
     if (sentenceTextarea) sentenceTextarea.value = intention.sentence || '';
@@ -84,6 +93,36 @@ export const PlannerController = {
     const completedCount = checkins.filter(Boolean).length;
     if (progressText) progressText.textContent = `${completedCount} / 7 Gece Tamamlandı`;
     if (progressBarFill) progressBarFill.style.width = `${(completedCount / 7) * 100}%`;
+
+    // 7-Day Cycle Completed Celebration Card
+    if (cycleBox) {
+      if (completedCount === 7) {
+        cycleBox.style.display = 'block';
+        cycleBox.innerHTML = `
+          <div class="cycle-celebration-card">
+            <div class="celebration-title">🎉 7 Gecelik Niyet Döngüsü Tamamlandı!</div>
+            <p class="celebration-desc">Kromanyon ile bu niyet üzerindeki haftalık çalışma döngüsünü tamamladınız. Bedeninizdeki ve zihninizdeki değişimi fark edin.</p>
+            <button id="reset-cycle-btn" class="btn btn-secondary btn-full" style="border-color: var(--accent-sage); color: var(--accent-sage); font-weight:600;">
+              🔄 Döngüyü Sıfırla & Yeni Haftaya Başla
+            </button>
+          </div>
+        `;
+        const resetBtn = cycleBox.querySelector('#reset-cycle-btn');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            StorageService.saveIntention({
+              checkins: [false, false, false, false, false, false, false],
+              startDate: new Date().toISOString()
+            });
+            this.renderIntentionCard();
+            UIController.showToast('🌱 Yeni haftalık niyet döngüsü başlatıldı!');
+          });
+        }
+      } else {
+        cycleBox.style.display = 'none';
+        cycleBox.innerHTML = '';
+      }
+    }
   },
 
   /**
@@ -270,8 +309,41 @@ export const PlannerController = {
     if (!searchInput) return;
 
     searchInput.addEventListener('input', (e) => {
-      this.journalSearchQuery = e.target.value.toLowerCase().trim();
+      this.journalSearchQuery = e.target.value.trim();
       this.renderJournalTimeline();
+    });
+  },
+
+  /**
+   * Render Quick Filter Chips for Journal (Feelings)
+   */
+  renderJournalFilterChips() {
+    const container = document.getElementById('journal-filter-chips');
+    if (!container) return;
+
+    const filters = [
+      { id: 'all', label: 'Tüm Notlar' },
+      { id: 'Gerginlik', label: '⚡ Gerginlik' },
+      { id: 'Hafiflik', label: '🌱 Hafiflik' },
+      { id: 'Öfke', label: '🔥 Öfke' },
+      { id: 'Düğümlenme', label: '🪢 Düğümlenme' },
+      { id: 'Baskı', label: '🪨 Baskı' },
+      { id: 'Ayrılık Acısı', label: '💔 Ayrılık' }
+    ];
+
+    container.innerHTML = filters.map(f => `
+      <button class="chip chip-sm ${this.journalActiveFilter === f.id ? 'active' : ''}" data-journal-filter="${f.id}">
+        ${f.label}
+      </button>
+    `).join('');
+
+    container.querySelectorAll('.chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.journalActiveFilter = btn.getAttribute('data-journal-filter');
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        this.renderJournalTimeline();
+      });
     });
   },
 
@@ -307,12 +379,17 @@ export const PlannerController = {
 
     let entries = StorageService.getJournalEntries();
 
-    // Apply search filter if active
+    // Apply feeling category filter if active
+    if (this.journalActiveFilter !== 'all') {
+      entries = entries.filter(e => e.feeling === this.journalActiveFilter);
+    }
+
+    // Apply search filter if active (using robust Turkish-tolerant fuzzy matching)
     if (this.journalSearchQuery) {
       entries = entries.filter(e => 
-        e.text.toLowerCase().includes(this.journalSearchQuery) ||
-        e.feeling.toLowerCase().includes(this.journalSearchQuery) ||
-        e.region.toLowerCase().includes(this.journalSearchQuery)
+        fuzzyIncludes(e.text, this.journalSearchQuery) ||
+        fuzzyIncludes(e.feeling, this.journalSearchQuery) ||
+        fuzzyIncludes(e.region, this.journalSearchQuery)
       );
     }
 
@@ -320,7 +397,7 @@ export const PlannerController = {
       timeline.innerHTML = `
         <div class="empty-state">
           <span class="empty-icon">📖</span>
-          <p>${this.journalSearchQuery ? 'Aradığınız kriterlere uygun not bulunamadı.' : 'Henüz farkındalık notu eklenmemiş. Yukarıdaki alandan ilk notunuzu kaydedebilirsiniz.'}</p>
+          <p>${this.journalSearchQuery || this.journalActiveFilter !== 'all' ? 'Aradığınız kriterlere uygun not bulunamadı.' : 'Henüz farkındalık notu eklenmemiş. Yukarıdaki alandan ilk notunuzu kaydedebilirsiniz.'}</p>
         </div>
       `;
       return;
@@ -344,9 +421,10 @@ export const PlannerController = {
         <div class="journal-entry-card" data-entry-id="${entry.id}">
           <div class="journal-card-header">
             <span class="journal-date">${dateStr} ${entry.edited_at ? '(Düzenlendi)' : ''}</span>
-            <div style="display:flex; gap:6px;">
-              <button class="edit-entry-btn" data-edit-id="${entry.id}" aria-label="Notu düzenle" style="background:none; border:none; cursor:pointer;">✏️</button>
-              <button class="delete-entry-btn" data-delete-id="${entry.id}" aria-label="Notu sil">🗑️</button>
+            <div style="display:flex; gap:8px;">
+              <button class="copy-entry-btn" data-copy-id="${entry.id}" aria-label="Notu panoya kopyala" title="Panoya Kopyala">📋</button>
+              <button class="edit-entry-btn" data-edit-id="${entry.id}" aria-label="Notu düzenle" title="Düzenle">✏️</button>
+              <button class="delete-entry-btn" data-delete-id="${entry.id}" aria-label="Notu sil" title="Sil">🗑️</button>
             </div>
           </div>
           <div class="journal-tags">
@@ -357,6 +435,26 @@ export const PlannerController = {
         </div>
       `;
     }).join('');
+
+    // Bind Copy events
+    timeline.querySelectorAll('.copy-entry-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-copy-id');
+        const entry = StorageService.getJournalEntries().find(item => item.id === id);
+        if (entry) {
+          const date = new Date(entry.timestamp).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const textToCopy = `[${date}] [${entry.feeling} - ${entry.region}]\n${entry.text}`;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              UIController.showToast('📋 Not panoya kopyalandı!');
+            }).catch(() => {
+              UIController.showToast('Kopyalama başarısız oldu.');
+            });
+          }
+        }
+      });
+    });
 
     // Bind Edit events
     timeline.querySelectorAll('.edit-entry-btn').forEach(btn => {
@@ -387,13 +485,38 @@ export const PlannerController = {
   },
 
   /**
-   * Bind Export JSON, Import JSON, and Clear Data Controls
+   * Bind Export JSON, Import JSON, Copy All Notes, and Clear Data Controls
    */
   bindDataBackupEvents() {
+    const copyAllBtn = document.getElementById('copy-all-notes-btn');
     const exportBtn = document.getElementById('export-data-btn');
     const importTriggerBtn = document.getElementById('import-data-btn-trigger');
     const importFileInput = document.getElementById('import-data-file-input');
     const clearBtn = document.getElementById('clear-all-data-btn');
+
+    if (copyAllBtn) {
+      copyAllBtn.addEventListener('click', () => {
+        const entries = StorageService.getJournalEntries();
+        if (entries.length === 0) {
+          UIController.showToast('Kopyalanacak kayıtlı not bulunamadı.');
+          return;
+        }
+        const textBlock = entries.map((e, idx) => {
+          const date = new Date(e.timestamp).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          return `${idx + 1}. [${date}] [Duygu: ${e.feeling} | Bölge: ${e.region}]\n${e.text}`;
+        }).join('\n\n---\n\n');
+
+        const fullCopy = `SubQ Farkındalık Notlarım & Duygu Günlüğü\nToplam Not: ${entries.length}\n\n${textBlock}`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullCopy).then(() => {
+            UIController.showToast('📋 Tüm notlar metin olarak panoya kopyalandı!');
+          }).catch(() => {
+            UIController.showToast('Kopyalama başarısız oldu.');
+          });
+        }
+      });
+    }
 
     if (exportBtn) {
       exportBtn.addEventListener('click', () => {
