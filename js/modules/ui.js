@@ -7,6 +7,11 @@ export const UIController = {
     this.bindTabNavigation();
     this.bindModals();
     this.bindThemeToggle();
+
+    // Listen for storage quota and error notifications
+    window.addEventListener('subq-storage-error', (e) => {
+      this.showToast(e.detail || 'Depolama hatası oluştu.', 5000);
+    });
   },
 
   /**

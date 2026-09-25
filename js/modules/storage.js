@@ -16,6 +16,15 @@ const DEFAULT_INTENTION = {
   startDate: new Date().toISOString()
 };
 
+function handleStorageError(e, actionName) {
+  console.error(`Error ${actionName} LocalStorage:`, e);
+  if (e && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22)) {
+    window.dispatchEvent(new CustomEvent('subq-storage-error', {
+      detail: '⚠️ Cihaz yerel depolama alanı dolu! Lütfen Planlayıcı > Veri Yönetimi bölümünden yedek alıp eski notları temizleyin.'
+    }));
+  }
+}
+
 export const StorageService = {
   /**
    * Get Active Intention
@@ -40,7 +49,7 @@ export const StorageService = {
       localStorage.setItem(STORAGE_KEYS.INTENTION, JSON.stringify(updated));
       return updated;
     } catch (e) {
-      console.error('Error saving intention to LocalStorage:', e);
+      handleStorageError(e, 'saving intention');
       return null;
     }
   },
@@ -90,7 +99,7 @@ export const StorageService = {
       localStorage.setItem(STORAGE_KEYS.JOURNAL, JSON.stringify(entries));
       return newEntry;
     } catch (e) {
-      console.error('Error saving journal entry:', e);
+      handleStorageError(e, 'saving journal entry');
       return null;
     }
   },
@@ -105,7 +114,7 @@ export const StorageService = {
       localStorage.setItem(STORAGE_KEYS.JOURNAL, JSON.stringify(filtered));
       return true;
     } catch (e) {
-      console.error('Error deleting journal entry:', e);
+      handleStorageError(e, 'deleting journal entry');
       return false;
     }
   },
@@ -125,7 +134,7 @@ export const StorageService = {
       }
       return false;
     } catch (e) {
-      console.error('Error updating journal entry:', e);
+      handleStorageError(e, 'updating journal entry');
       return false;
     }
   },

@@ -132,17 +132,28 @@ export const ExercisesController = {
   },
 
   /**
+   * Singleton Web Audio Context Helper
+   */
+  getAudioContext() {
+    if (!window._subqAudioContext) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        window._subqAudioContext = new AudioCtx();
+      }
+    }
+    return window._subqAudioContext;
+  },
+
+  /**
    * Harmonious Singing Bowl Chime upon completion (Web Audio API)
    */
   playCompletionChime() {
     if (!this.isAudioEnabled) return;
 
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!this.audioContext) {
-        this.audioContext = new AudioCtx();
-      }
+      this.audioContext = this.getAudioContext();
+      if (!this.audioContext) return;
+
       if (this.audioContext.state === 'suspended') {
         this.audioContext.resume();
       }
@@ -166,6 +177,14 @@ export const ExercisesController = {
 
         osc.connect(gain);
         gain.connect(this.audioContext.destination);
+
+        // Explicitly disconnect nodes after playback to prevent memory leaks
+        osc.onended = () => {
+          try {
+            osc.disconnect();
+            gain.disconnect();
+          } catch (e) {}
+        };
 
         osc.start(now);
         osc.stop(now + 4.5);
@@ -215,11 +234,9 @@ export const ExercisesController = {
         this.stopTimeoutId = null;
       }
 
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!this.audioContext) {
-        this.audioContext = new AudioCtx();
-      }
+      this.audioContext = this.getAudioContext();
+      if (!this.audioContext) return;
+
       if (this.audioContext.state === 'suspended') {
         this.audioContext.resume();
       }

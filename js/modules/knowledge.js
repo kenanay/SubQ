@@ -61,9 +61,13 @@ export const KnowledgeController = {
     const searchInput = document.getElementById('knowledge-search');
     if (!searchInput) return;
 
+    let debounceTimer = null;
     searchInput.addEventListener('input', (e) => {
-      this.searchQuery = e.target.value.toLowerCase().trim();
-      this.renderArticles();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        this.searchQuery = e.target.value.toLowerCase().trim();
+        this.renderArticles();
+      }, 250);
     });
   },
 

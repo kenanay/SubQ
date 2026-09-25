@@ -115,9 +115,13 @@ export const BodyMapController = {
     const searchInput = document.getElementById('symptom-search-input');
     if (!searchInput) return;
 
+    let debounceTimer = null;
     searchInput.addEventListener('input', (e) => {
-      this.searchQuery = e.target.value.toLowerCase().trim();
-      this.renderSymptomList();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        this.searchQuery = e.target.value.toLowerCase().trim();
+        this.renderSymptomList();
+      }, 250);
     });
   },
 

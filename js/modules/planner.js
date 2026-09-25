@@ -302,15 +302,19 @@ export const PlannerController = {
   },
 
   /**
-   * Bind Journal Search Filter
+   * Bind Journal Search Filter (with 250ms debounce)
    */
   bindJournalSearch() {
     const searchInput = document.getElementById('journal-search-input');
     if (!searchInput) return;
 
+    let debounceTimer = null;
     searchInput.addEventListener('input', (e) => {
-      this.journalSearchQuery = e.target.value.trim();
-      this.renderJournalTimeline();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        this.journalSearchQuery = e.target.value.trim();
+        this.renderJournalTimeline();
+      }, 250);
     });
   },
 
@@ -371,7 +375,7 @@ export const PlannerController = {
   },
 
   /**
-   * Render Saved Journal Timeline (Safely Escaped Text & Filtered)
+   * Render Saved Journal Timeline (Safely Escaped Text, IDs & Filtered)
    */
   renderJournalTimeline() {
     const timeline = document.getElementById('journal-timeline-grid');
@@ -413,18 +417,19 @@ export const PlannerController = {
         minute: '2-digit'
       });
 
+      const safeId = escapeHTML(entry.id);
       const safeText = escapeHTML(entry.text);
       const safeFeeling = escapeHTML(entry.feeling);
       const safeRegion = escapeHTML(entry.region);
 
       return `
-        <div class="journal-entry-card" data-entry-id="${entry.id}">
+        <div class="journal-entry-card" data-entry-id="${safeId}">
           <div class="journal-card-header">
             <span class="journal-date">${dateStr} ${entry.edited_at ? '(Düzenlendi)' : ''}</span>
             <div style="display:flex; gap:8px;">
-              <button class="copy-entry-btn" data-copy-id="${entry.id}" aria-label="Notu panoya kopyala" title="Panoya Kopyala">📋</button>
-              <button class="edit-entry-btn" data-edit-id="${entry.id}" aria-label="Notu düzenle" title="Düzenle">✏️</button>
-              <button class="delete-entry-btn" data-delete-id="${entry.id}" aria-label="Notu sil" title="Sil">🗑️</button>
+              <button class="copy-entry-btn" data-copy-id="${safeId}" aria-label="Notu panoya kopyala" title="Panoya Kopyala">📋</button>
+              <button class="edit-entry-btn" data-edit-id="${safeId}" aria-label="Notu düzenle" title="Düzenle">✏️</button>
+              <button class="delete-entry-btn" data-delete-id="${safeId}" aria-label="Notu sil" title="Sil">🗑️</button>
             </div>
           </div>
           <div class="journal-tags">
