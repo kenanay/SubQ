@@ -1,6 +1,7 @@
 /**
  * SubQ Main Application Entrypoint
  */
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import { UIController } from './modules/ui.js';
 import { KnowledgeController } from './modules/knowledge.js';
 import { BodyMapController } from './modules/bodyMap.js';
@@ -21,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     PlannerController.init();
 
     console.log('✅ SubQ ready.');
+
+    // Initialize Vercel Speed Insights (production only)
+    if (import.meta.env.PROD) {
+      injectSpeedInsights();
+    }
   } catch (err) {
     console.error('SubQ initialization failed:', err);
     const appEl = document.getElementById('app');
